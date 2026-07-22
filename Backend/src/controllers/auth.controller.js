@@ -36,12 +36,12 @@ export const signup = async (req, res) => {
 
     // create user
     const user = await User.create({
-      name,
-      email,
-      password: hashedPassword,
-      role,
-      organizationId: org._id
-    });
+  name,
+  email,
+  password,
+  role,
+  organizationId: org._id,
+});
 
     res.status(201).json({
       message: "User registered successfully",
@@ -58,7 +58,7 @@ export const login = async (req, res) => {
     const { email, password } = req.body;
 
     // 🔍 find user
-    const user = await User.findOne({ email });
+const user = await User.findOne({ email }).select("+password");
     if (!user) {
       return res.status(400).json({
         message: "Invalid email or password"

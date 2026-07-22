@@ -31,7 +31,7 @@
 
 import express from "express";
 import multer from "multer";
-import { uploadQuestionBank } from "../controllers/questionBank.controller.js";
+import { uploadQuestionBank, getQuestionBanks } from "../controllers/questionBank.controller.js";
 
 const router = express.Router();
 
@@ -45,5 +45,7 @@ router.post(
   ]),
   uploadQuestionBank
 );
+
+router.get("/", getQuestionBanks);
 
 export default router;

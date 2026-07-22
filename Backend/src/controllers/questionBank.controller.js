@@ -82,3 +82,33 @@ export const uploadQuestionBank = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
+export const getQuestionBanks = async (req, res) => {
+  try {
+    const { organizationId } = req.query;
+    if (!organizationId) {
+      return res.status(400).json({ message: "organizationId is required" });
+    }
+
+    const qbs = await QuestionBank.find({ organizationId });
+    const summary = qbs.map((qb) => {
+      const qList = qb.questions || [];
+      const easy = qList.filter(q => q.difficulty === "easy" || q.marks === 1).length;
+      const medium = qList.filter(q => q.difficulty === "medium" || q.marks === 2).length;
+      const hard = qList.filter(q => q.difficulty === "hard" || q.marks === 3).length;
+
+      return {
+        _id: qb._id,
+        name: qb.name,
+        code: qb.code,
+        createdAt: qb.createdAt,
+        totalQuestions: qList.length,
+        stats: { easy, medium, hard }
+      };
+    });
+
+    res.json(summary);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};

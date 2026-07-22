@@ -229,3 +229,17 @@ export const createExam = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
+export const getExams = async (req, res) => {
+  try {
+    const { organizationId } = req.query;
+    if (!organizationId) {
+      return res.status(400).json({ message: "organizationId is required" });
+    }
+
+    const exams = await GeneratedExam.find({ organizationId }).sort({ createdAt: -1 });
+    res.json(exams);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
