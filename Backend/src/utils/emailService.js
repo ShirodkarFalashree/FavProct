@@ -8,72 +8,78 @@ dotenv.config();
 const EMAIL_LOGS_DIR = path.resolve("uploads");
 const EMAIL_LOGS_FILE = path.join(EMAIL_LOGS_DIR, "email_logs.txt");
 
-// Ensure uploads directory exists
+// Create uploads folder if it doesn't exist
 if (!fs.existsSync(EMAIL_LOGS_DIR)) {
   fs.mkdirSync(EMAIL_LOGS_DIR, { recursive: true });
 }
 
+// Create transporter only once
+const transporter = nodemailer.createTransport({
+  host: process.env.SMTP_HOST,
+  port: Number(process.env.SMTP_PORT),
+  secure: Number(process.env.SMTP_PORT) === 465,
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
+  },
+});
+
 export const sendEmail = async ({ to, subject, text, html }) => {
-  const smtpHost = process.env.SMTP_HOST;
-  const smtpPort = process.env.SMTP_PORT || 587;
-  const smtpUser = process.env.SMTP_USER;
-  const smtpPass = process.env.SMTP_PASS;
-
-  const isSmtpConfigured = smtpHost && smtpUser && smtpPass;
-
+  // Log every email locally
   const logContent = `
 ========================================
 DATE: ${new Date().toISOString()}
 TO: ${to}
 SUBJECT: ${subject}
+
 BODY:
 ${text || html}
-========================================
-\n`;
 
-  // Always log to local debug file
+========================================
+
+`;
+
   try {
     fs.appendFileSync(EMAIL_LOGS_FILE, logContent);
   } catch (err) {
-    console.error("Failed to write to local email logs:", err.message);
+    console.error("❌ Failed to write email log:", err.message);
   }
 
-  if (isSmtpConfigured) {
-    try {
-      const transporter = nodemailer.createTransport({
-        host: smtpHost,
-        port: parseInt(smtpPort, 10),
-        secure: parseInt(smtpPort, 10) === 465, // true for 465, false for others
-        auth: {
-          user: smtpUser,
-          pass: smtpPass
-        }
-      });
+  try {
+    console.log("====================================");
+    console.log("📧 Sending Email...");
+    console.log("Host:", process.env.SMTP_HOST);
+    console.log("Port:", process.env.SMTP_PORT);
+    console.log("User:", process.env.EMAIL_USER);
+    console.log(
+      "Password:",
+      process.env.EMAIL_PASS ? "Loaded ✅" : "Missing ❌"
+    );
+    console.log("Recipient:", to);
+    console.log("====================================");
 
-      const info = await transporter.sendMail({
-        from: `"Assessment System" <${smtpUser}>`,
-        to,
-        subject,
-        text,
-        html: html || text
-      });
+    const info = await transporter.sendMail({
+      from: `"Assessment System" <${process.env.EMAIL_USER}>`,
+      to,
+      subject,
+      text,
+      html: html || text,
+    });
 
-      console.log(`[Email Service] Real email sent to ${to}. Message ID: ${info.messageId}`);
-      return { success: true, messageId: info.messageId };
-    } catch (error) {
-      console.error(`[Email Service] SMTP Error sending to ${to}:`, error.message);
-      console.log(`[Email Service] Falling back to local console logging for ${to}.`);
-    }
+    console.log("✅ Email Sent Successfully!");
+    console.log("Message ID:", info.messageId);
+
+    return {
+      success: true,
+      messageId: info.messageId,
+    };
+  } catch (error) {
+    console.error("❌ Email Sending Failed");
+    console.error(error);
+
+    return {
+      success: false,
+      error: error.message,
+    };
   }
-
-  // Fallback console log
-  console.log("----------------------------------------");
-  console.log(`[SMTP FALLBACK] Sent Email Simulation:`);
-  console.log(`To: ${to}`);
-  console.log(`Subject: ${subject}`);
-  console.log(`Message: ${text}`);
-  console.log(`[Details saved in: Backend/uploads/email_logs.txt]`);
-  console.log("----------------------------------------");
-
-  return { success: true, simulated: true };
 };

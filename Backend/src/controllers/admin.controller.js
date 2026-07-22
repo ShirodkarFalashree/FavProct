@@ -27,7 +27,36 @@ export const addTeacher = async (req, res) => {
 
     const existing = await User.findOne({ email });
     if (existing) {
-      return res.status(400).json({ message: "User with this email already exists" });
+      if (existing.role === "teacher") {
+        // Teacher already exists. Append new subjects if not present.
+        const newSubjects = (subjects || []).filter(sub => !existing.subjects.includes(sub));
+        
+        if (newSubjects.length > 0) {
+          existing.subjects.push(...newSubjects);
+          await existing.save();
+
+          // Send notification email for new subjects
+          await sendEmail({
+            to: email,
+            subject: "New Subjects Assigned to Your Account",
+            text: `Hello ${existing.name},\n\nNew subjects/exams have been assigned to you on the Assessment Platform.\n\nNewly Assigned Subjects: ${newSubjects.join(", ")}\n\nPlease log in to view details.\n\nRegards,\nAdmin Team`
+          });
+        } else {
+          // Send reminder email anyway
+          await sendEmail({
+            to: email,
+            subject: "Your Assigned Subjects Updated",
+            text: `Hello ${existing.name},\n\nYour assigned subjects list was reviewed by the admin.\n\nCurrent Assigned Subjects: ${existing.subjects.join(", ")}\n\nRegards,\nAdmin Team`
+          });
+        }
+
+        return res.status(200).json({
+          message: "Teacher account updated and notification email sent",
+          teacher: { id: existing._id, name: existing.name, email: existing.email }
+        });
+      } else {
+        return res.status(400).json({ message: `User with this email already exists as a ${existing.role}` });
+      }
     }
 
     const tempPassword = generatePassword();
@@ -142,6 +171,19 @@ export const allotExamViaExcel = async (req, res) => {
             subject: "Your Teacher Account Created",
             text: `Hello ${evaluatorName},\n\nAn evaluator account has been created for you.\n\nYour login credentials are:\nEmail: ${evaluatorEmail}\nPassword: ${teacherTempPassword}\n\nRegards,\nAdmin Team`
           });
+        } else {
+          // If teacher exists, verify if exam.title is assigned to them.
+          if (!teacher.subjects.includes(exam.title)) {
+            teacher.subjects.push(exam.title);
+            await teacher.save();
+
+            // Send notification email about new assignment
+            await sendEmail({
+              to: evaluatorEmail,
+              subject: "New Exam Evaluation Assigned",
+              text: `Hello ${teacher.name},\n\nYou have been assigned to evaluate student attempts for the exam: "${exam.title}".\n\nPlease log in to your dashboard to review and grade submissions.\n\nRegards,\nAdmin Team`
+            });
+          }
         }
 
         // 2. Find or create Student
