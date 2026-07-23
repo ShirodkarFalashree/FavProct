@@ -188,7 +188,8 @@ export const allotExamViaExcel = async (req, res) => {
 
         // 2. Find or create Student
         let student = await User.findOne({ email: studentEmail, role: "student" });
-        if (!student) {
+        const isNewStudent = !student;
+        if (isNewStudent) {
           const studentTempPassword = generatePassword();
           student = await User.create({
             name: studentName,
@@ -228,6 +229,15 @@ export const allotExamViaExcel = async (req, res) => {
             status: "allotted"
           });
           summary.examsAllotted++;
+
+          // Send email to existing student for new exam allotment
+          if (!isNewStudent) {
+            await sendEmail({
+              to: studentEmail,
+              subject: "New Exam Allotted",
+              text: `Hello ${student.name},\n\nA new exam has been allotted to you: "${exam.title}".\n\nPlease log in to your dashboard to complete it.\n\nRegards,\nAdmin Team`
+            });
+          }
         }
       } catch (err) {
         summary.errors.push(`Error processing row for ${studentEmail}: ${err.message}`);

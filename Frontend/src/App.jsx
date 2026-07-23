@@ -17,7 +17,6 @@ import Cohorts from "./pages/admin/Cohorts";
 import Teachers from "./pages/admin/Teachers";
 import QuestionBank from "./pages/admin/QuestionBank";
 import ExamCreation from "./pages/admin/ExamCreation";
-import ExamAllotment from "./pages/admin/ExamAllotment";
 
 // Teacher Pages
 import TeacherDashboard from "./pages/teacher/TeacherDashboard";
@@ -79,7 +78,6 @@ function App() {
             <Route path="/admin/teachers" element={<Teachers />} />
             <Route path="/admin/questions" element={<QuestionBank />} />
             <Route path="/admin/exams/create" element={<ExamCreation />} />
-            <Route path="/admin/exams/allot" element={<ExamAllotment />} />
           </Route>
 
           {/* Teacher Protected Routes */}

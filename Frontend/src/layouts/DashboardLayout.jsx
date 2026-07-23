@@ -43,8 +43,7 @@ const DashboardLayout = () => {
     { label: "Cohorts & Classes", path: "/admin/cohorts", icon: BookOpen },
     { label: "Teachers", path: "/admin/teachers", icon: Users },
     { label: "Question Banks", path: "/admin/questions", icon: FileSpreadsheet },
-    { label: "Create Exam", path: "/admin/exams/create", icon: FileText },
-    { label: "Allot Exams", path: "/admin/exams/allot", icon: ClipboardList }
+    { label: "Create Exam", path: "/admin/exams/create", icon: FileText }
   ];
 
   const getTeacherLinks = () => [

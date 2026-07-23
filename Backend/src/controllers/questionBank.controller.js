@@ -112,3 +112,27 @@ export const getQuestionBanks = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
+export const getQuestionBankById = async (req, res) => {
+  try {
+    const qb = await QuestionBank.findById(req.params.id);
+    if (!qb) {
+      return res.status(404).json({ message: "Question bank not found" });
+    }
+    res.json(qb);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+export const deleteQuestionBank = async (req, res) => {
+  try {
+    const qb = await QuestionBank.findByIdAndDelete(req.params.id);
+    if (!qb) {
+      return res.status(404).json({ message: "Question bank not found" });
+    }
+    res.json({ message: "Question bank deleted successfully" });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};

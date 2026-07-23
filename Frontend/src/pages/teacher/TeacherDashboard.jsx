@@ -4,6 +4,7 @@ import API from "../../services/api";
 import { toast } from "react-hot-toast";
 import { Link } from "react-router-dom";
 import { ClipboardList, CheckCircle2, User, BookOpen, Layers, ArrowRight } from "lucide-react";
+import { DoughnutChart, BarChart } from "../../components/DashboardCharts";
 
 const TeacherDashboard = () => {
   const { user } = useAuth();
@@ -96,6 +97,25 @@ const TeacherDashboard = () => {
             )}
           </div>
         </div>
+      </div>
+
+      {/* Row 1.5: Visual Analytics Charts */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <DoughnutChart
+          title="Grading Status Overview"
+          data={[
+            { label: "Completed", value: data.evaluated.length, color: "#10b981" },
+            { label: "Pending Evaluation", value: data.pending.length, color: "#f97316" }
+          ]}
+        />
+        <BarChart
+          title="Evaluation Workload Breakdown"
+          data={[
+            { label: "Pending", value: data.pending.length, color: "from-orange-500 to-red-500" },
+            { label: "Evaluated", value: data.evaluated.length, color: "from-emerald-500 to-teal-500" },
+            { label: "Assigned Courses", value: user.subjects ? user.subjects.length : 0, color: "from-blue-500 to-indigo-500" }
+          ]}
+        />
       </div>
 
       {/* Row 2: Recent Pending evaluations */}

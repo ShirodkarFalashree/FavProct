@@ -3,6 +3,7 @@ import { useAuth } from "../../context/AuthContext";
 import API from "../../services/api";
 import { toast } from "react-hot-toast";
 import { Users, GraduationCap, ClipboardList, Layers, FileText, CheckCircle, Clock } from "lucide-react";
+import { DoughnutChart, BarChart } from "../../components/DashboardCharts";
 
 const AdminDashboard = () => {
   const { user } = useAuth();
@@ -82,6 +83,27 @@ const AdminDashboard = () => {
         })}
       </div>
 
+      {/* Visual Analytics Charts */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <DoughnutChart
+          title="Evaluation Status Breakdown"
+          data={[
+            { label: "Completed", value: stats.completedEvaluations, color: "#10b981" },
+            { label: "Pending", value: stats.pendingEvaluations, color: "#f97316" },
+            { label: "Unsubmitted/Allotted", value: Math.max(0, stats.totalAllotments - stats.pendingEvaluations - stats.completedEvaluations), color: "#6366f1" }
+          ]}
+        />
+        <BarChart
+          title="Institution Directory Stats"
+          data={[
+            { label: "Students", value: stats.studentsCount, color: "from-blue-500 to-indigo-500" },
+            { label: "Teachers", value: stats.teachersCount, color: "from-indigo-500 to-purple-500" },
+            { label: "Cohorts", value: stats.cohortsCount, color: "from-purple-500 to-pink-500" },
+            { label: "Exams", value: stats.examsCount, color: "from-pink-500 to-rose-500" }
+          ]}
+        />
+      </div>
+
       {/* Overview Block */}
       <div className="rounded-2xl border border-slate-800 bg-slate-900/30 p-8 backdrop-blur-md">
         <h3 className="text-lg font-bold text-white mb-4">Quick Operations Guide</h3>
@@ -89,7 +111,7 @@ const AdminDashboard = () => {
           <div className="space-y-2">
             <h4 className="font-semibold text-indigo-400">1. Setup Structure</h4>
             <p className="text-slate-400 leading-relaxed">
-              Go to <strong>Cohorts & Classes</strong> to define your academic grades and add subjects. This forms the basis of your courses.
+              Go to <strong>Cohorts & Classes</strong> to define your academic grades and add subjects. This forms the basis of courses.
             </p>
           </div>
           <div className="space-y-2">

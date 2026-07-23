@@ -4,6 +4,7 @@ import API from "../../services/api";
 import { toast } from "react-hot-toast";
 import { Link } from "react-router-dom";
 import { GraduationCap, Clock, Award, PlayCircle, Eye, AlertCircle, Calendar } from "lucide-react";
+import { DoughnutChart, LineChart } from "../../components/DashboardCharts";
 
 const StudentDashboard = () => {
   const { user } = useAuth();
@@ -47,6 +48,15 @@ const StudentDashboard = () => {
 
   const list = getActiveList();
 
+  // Prepare line chart trend data
+  const performanceTrendData = [...data.graded]
+    .reverse() // show oldest to newest chronologically
+    .map((allotment) => ({
+      label: allotment.examId?.title || "Exam",
+      value: allotment.marksObtained || 0,
+      max: allotment.examId?.totalMarks || 100
+    }));
+
   return (
     <div className="space-y-8">
       {/* Student Profile Overview banner */}
@@ -66,6 +76,22 @@ const StudentDashboard = () => {
           <p>Student Identifier: {user.email}</p>
           <p className="mt-0.5">Organization ID: {user.organizationId}</p>
         </div>
+      </div>
+
+      {/* Visual Analytics */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <DoughnutChart
+          title="Exam Allocation Breakdown"
+          data={[
+            { label: "Available", value: data.available.length, color: "#6366f1" },
+            { label: "Pending Grading", value: data.pending.length, color: "#f97316" },
+            { label: "Graded & Completed", value: data.graded.length, color: "#10b981" }
+          ]}
+        />
+        <LineChart
+          title="Performance Trend (Marks Obtained)"
+          data={performanceTrendData}
+        />
       </div>
 
       {/* Tabs */}
