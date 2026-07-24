@@ -5,6 +5,7 @@ import { toast } from "react-hot-toast";
 import { Link } from "react-router-dom";
 import { GraduationCap, Clock, Award, PlayCircle, Eye, AlertCircle, Calendar } from "lucide-react";
 import { DoughnutChart, LineChart } from "../../components/DashboardCharts";
+import { CalendarView } from "../../components/CalendarView";
 
 const StudentDashboard = () => {
   const { user } = useAuth();
@@ -57,6 +58,18 @@ const StudentDashboard = () => {
       max: allotment.examId?.totalMarks || 100
     }));
 
+  // Extract unique allotted exams for the calendar
+  const uniqueExamsMap = {};
+  [
+    ...data.available.map(a => a.examId),
+    ...data.pending.map(a => a.examId)
+  ].forEach(exam => {
+    if (exam && exam._id) {
+      uniqueExamsMap[exam._id] = exam;
+    }
+  });
+  const studentExams = Object.values(uniqueExamsMap);
+
   return (
     <div className="space-y-8">
       {/* Student Profile Overview banner */}
@@ -66,32 +79,43 @@ const StudentDashboard = () => {
             <GraduationCap className="h-8 w-8" />
           </div>
           <div>
-            <h2 className="text-xl font-bold text-white leading-tight">Student Dashboard</h2>
-            <p className="text-sm text-slate-400 mt-1">
-              Registered Cohort: <strong className="text-slate-200">{user.cohort || "Not Assigned"}</strong>
+            <h2 className="text-xl font-bold text-white leading-tight">{user.name}</h2>
+            <p className="text-sm text-slate-450 mt-1">
+              Cohort: <strong className="text-indigo-400 font-semibold">{user.cohort || "Not Assigned"}</strong>
             </p>
           </div>
         </div>
-        <div className="text-left md:text-right text-xs text-slate-500">
-          <p>Student Identifier: {user.email}</p>
-          <p className="mt-0.5">Organization ID: {user.organizationId}</p>
+        <div className="text-left md:text-right">
+          <span className="inline-flex items-center rounded-xl bg-indigo-500/10 border border-indigo-500/20 px-3 py-1.5 text-xs font-semibold text-indigo-300">
+            {user.organizationName || "Student Account"}
+          </span>
+          <p className="text-[10px] text-slate-500 mt-1.5 font-mono">Org ID: {user.organizationId}</p>
         </div>
       </div>
 
-      {/* Visual Analytics */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <DoughnutChart
-          title="Exam Allocation Breakdown"
-          data={[
-            { label: "Available", value: data.available.length, color: "#6366f1" },
-            { label: "Pending Grading", value: data.pending.length, color: "#f97316" },
-            { label: "Graded & Completed", value: data.graded.length, color: "#10b981" }
-          ]}
-        />
-        <LineChart
-          title="Performance Trend (Marks Obtained)"
-          data={performanceTrendData}
-        />
+      {/* Grid containing Calendar (top-left) and Visual Charts (top-right) */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Left: Compact Calendar View */}
+        <div className="lg:col-span-1">
+          <CalendarView exams={studentExams} title="Your Exam Schedule" />
+        </div>
+
+        {/* Right: Visual Analytics Charts side-by-side */}
+        <div className="lg:col-span-2 grid grid-cols-1  gap-6">
+         
+          <LineChart  stroke="green" 
+            title="Performance Trend"
+            data={performanceTrendData}
+          />
+        </div>
+         <DoughnutChart
+            title="Exam Allocation Status"
+            data={[
+              { label: "Available", value: data.available.length, color: "#6366f1" },
+              { label: "Pending Review", value: data.pending.length, color: "#f97316" },
+              { label: "Completed", value: data.graded.length, color: "#10b981" }
+            ]}
+          />
       </div>
 
       {/* Tabs */}
@@ -132,7 +156,7 @@ const StudentDashboard = () => {
               return (
                 <div
                   key={allotment._id}
-                  className="rounded-xl border border-slate-850 bg-slate-900/40 p-5 flex flex-col justify-between space-y-4"
+                  className="rounded-xl border border-slate-855 bg-slate-900/40 p-5 flex flex-col justify-between space-y-4"
                 >
                   <div className="space-y-2">
                     <div className="flex items-start justify-between">
@@ -192,7 +216,7 @@ const StudentDashboard = () => {
                       </div>
                       <Link
                         to={`/student/result/${allotment._id}`}
-                        className="flex items-center rounded-xl bg-slate-850 border border-slate-700 hover:bg-slate-800 py-2 px-4 text-xs font-semibold text-slate-200 transition-colors"
+                        className="flex items-center rounded-xl bg-slate-855 border border-slate-700 hover:bg-slate-800 py-2 px-4 text-xs font-semibold text-slate-200 transition-colors"
                       >
                         Review Results
                         <Eye className="ml-1.5 h-4 w-4" />

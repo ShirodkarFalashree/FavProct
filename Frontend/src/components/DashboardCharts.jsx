@@ -1,5 +1,16 @@
 import React from "react";
 
+// Helper to map client-passed hex colors to our minimal theme CSS variables
+const mapColorToThemeVar = (color) => {
+  if (!color) return "var(--accent)";
+  const c = color.toLowerCase();
+  if (c === "#10b981" || c === "green" || c === "emerald") return "var(--success)";
+  if (c === "#f97316" || c === "#ca8a04") return "var(--warning)";
+  if (c === "#ef4444" || c === "#dc2626") return "var(--error)";
+  if (c === "#6366f1" || c === "#818cf8") return "var(--accent)";
+  return color; // default to passed class or hex
+};
+
 // 1. Doughnut Chart Component
 export const DoughnutChart = ({ data, title }) => {
   const total = data.reduce((sum, item) => sum + item.value, 0);
@@ -15,7 +26,7 @@ export const DoughnutChart = ({ data, title }) => {
       <div className="relative w-40 h-40 flex items-center justify-center">
         <svg viewBox="0 0 140 140" className="w-full h-full transform -rotate-90">
           {total === 0 ? (
-            <circle cx="70" cy="70" r={radius} fill="none" stroke="#1e293b" strokeWidth={strokeWidth} />
+            <circle cx="70" cy="70" r={radius} fill="none" stroke="var(--border-primary)" strokeWidth={strokeWidth} />
           ) : (
             data.map((item, index) => {
               const percentage = (item.value / total) * 100;
@@ -31,7 +42,7 @@ export const DoughnutChart = ({ data, title }) => {
                   cy="70"
                   r={radius}
                   fill="none"
-                  stroke={item.color}
+                  stroke={mapColorToThemeVar(item.color)}
                   strokeWidth={strokeWidth}
                   strokeDasharray={circumference}
                   strokeDashoffset={strokeOffset}
@@ -51,7 +62,7 @@ export const DoughnutChart = ({ data, title }) => {
       <div className="mt-6 w-full grid grid-cols-2 gap-3 text-xs">
         {data.map((item, index) => (
           <div key={index} className="flex items-center space-x-2">
-            <span className="h-2.5 w-2.5 rounded-full shrink-0" style={{ backgroundColor: item.color }} />
+            <span className="h-2.5 w-2.5 rounded-full shrink-0" style={{ backgroundColor: mapColorToThemeVar(item.color) }} />
             <span className="text-slate-400 font-medium truncate">{item.label}</span>
             <span className="text-white font-bold ml-auto">{item.value}</span>
           </div>
@@ -98,12 +109,16 @@ export const BarChart = ({ data, title, height = 200 }) => {
 };
 
 // 3. Line Chart Component
-export const LineChart = ({ data, title, height = 200 }) => {
+export const LineChart = ({ data, title, height = 200, color, stroke }) => {
   const chartHeight = height - 40;
   const paddingX = 40;
   const paddingY = 20;
   const svgWidth = 500;
   const svgHeight = chartHeight;
+  
+  const chartColor = stroke || color || "var(--accent)";
+  const resolvedColor = mapColorToThemeVar(chartColor);
+  const gradientId = `areaGrad-${(title || "default").replace(/[^a-zA-Z0-9]/g, "")}`;
   
   const points = data.map((item) => {
     const percentage = (item.value / (item.max || 100)) * 100;
@@ -145,35 +160,35 @@ export const LineChart = ({ data, title, height = 200 }) => {
         <div className="relative w-full overflow-x-auto">
           <svg viewBox={`0 0 ${svgWidth} ${svgHeight}`} className="w-full min-w-[400px] h-auto overflow-visible">
             <defs>
-              <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#6366f1" stopOpacity="0.3" />
-                <stop offset="100%" stopColor="#6366f1" stopOpacity="0.0" />
+              <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor={resolvedColor} stopOpacity="0.2" />
+                <stop offset="100%" stopColor={resolvedColor} stopOpacity="0.0" />
               </linearGradient>
             </defs>
             
             {/* Gridlines */}
-            <line x1={paddingX} y1={paddingY} x2={svgWidth - paddingX} y2={paddingY} stroke="#1e293b" strokeDasharray="3,3" />
-            <line x1={paddingX} y1={svgHeight / 2} x2={svgWidth - paddingX} y2={svgHeight / 2} stroke="#1e293b" strokeDasharray="3,3" />
-            <line x1={paddingX} y1={svgHeight - paddingY} x2={svgWidth - paddingX} y2={svgHeight - paddingY} stroke="#1e293b" />
+            <line x1={paddingX} y1={paddingY} x2={svgWidth - paddingX} y2={paddingY} stroke="var(--border-primary)" strokeDasharray="3,3" />
+            <line x1={paddingX} y1={svgHeight / 2} x2={svgWidth - paddingX} y2={svgHeight / 2} stroke="var(--border-primary)" strokeDasharray="3,3" />
+            <line x1={paddingX} y1={svgHeight - paddingY} x2={svgWidth - paddingX} y2={svgHeight - paddingY} stroke="var(--border-primary)" />
             
             {/* Area */}
             {coords.length > 0 && (
-              <path d={areaD} fill="url(#areaGrad)" />
+              <path d={areaD} fill={`url(#${gradientId})`} />
             )}
             
             {/* Path line */}
             {coords.length > 0 && (
-              <path d={pathD} fill="none" stroke="#6366f1" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+              <path d={pathD} fill="none" stroke={resolvedColor} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
             )}
             
             {/* Data circles & labels */}
             {coords.map((c, index) => (
               <g key={index} className="group cursor-pointer">
-                <circle cx={c.x} cy={c.y} r="5" fill="#1e1b4b" stroke="#818cf8" strokeWidth="3" className="transition-all duration-200 hover:scale-150" />
-                <text x={c.x} y={c.y - 12} textAnchor="middle" className="fill-white text-[10px] font-bold opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                <circle cx={c.x} cy={c.y} r="5" fill="var(--bg-card)" stroke={resolvedColor} strokeWidth="3" className="transition-all duration-200 hover:scale-150" />
+                <text x={c.x} y={c.y - 12} textAnchor="middle" fill="var(--text-primary)" className="text-[10px] font-bold opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                   {c.value}/{c.max}
                 </text>
-                <text x={c.x} y={svgHeight} textAnchor="middle" className="fill-slate-500 text-[9px] font-semibold uppercase tracking-wider">
+                <text x={c.x} y={svgHeight} textAnchor="middle" fill="var(--text-muted)" className="text-[9px] font-semibold uppercase tracking-wider">
                   {c.label.substring(0, 12)}
                 </text>
               </g>

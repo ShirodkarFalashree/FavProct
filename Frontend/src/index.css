@@ -1,1 +1,273 @@
 @import "tailwindcss";
+
+@theme {
+  --color-slate-955: var(--bg-page);
+  --color-slate-950: var(--bg-page);
+  --color-slate-900: var(--bg-card);
+  --color-slate-855: var(--border-primary);
+  --color-slate-850: var(--border-primary);
+  --color-slate-800: var(--border-primary);
+  --color-slate-700: var(--bg-card-hover);
+  --color-slate-655: var(--text-muted);
+  --color-slate-650: var(--text-muted);
+  --color-slate-500: var(--text-muted);
+  --color-slate-455: var(--text-secondary);
+  --color-slate-450: var(--text-secondary);
+  --color-slate-400: var(--text-secondary);
+  --color-slate-350: var(--text-primary);
+  --color-slate-300: var(--text-primary);
+  --color-slate-200: var(--text-primary);
+  
+  /* Pastel Indigo overrides */
+  --color-indigo-50: var(--indigo-light);
+  --color-indigo-100: var(--indigo-light);
+  --color-indigo-200: var(--indigo-light);
+  --color-indigo-300: var(--indigo-pastel);
+  --color-indigo-400: var(--indigo-pastel);
+  --color-indigo-500: var(--indigo-pastel);
+  --color-indigo-600: var(--indigo-hover);
+  --color-indigo-650: var(--indigo-hover);
+  --color-indigo-700: var(--indigo-hover-dark);
+  --color-indigo-750: var(--indigo-hover-dark);
+  --color-indigo-800: var(--indigo-hover-dark);
+  --color-indigo-900: var(--indigo-hover-dark);
+
+  /* Pastel Purple overrides */
+  --color-purple-50: var(--purple-light);
+  --color-purple-100: var(--purple-light);
+  --color-purple-200: var(--purple-light);
+  --color-purple-300: var(--purple-pastel);
+  --color-purple-400: var(--purple-pastel);
+  --color-purple-500: var(--purple-pastel);
+  --color-purple-600: var(--purple-hover);
+  --color-purple-700: var(--purple-hover-dark);
+  --color-purple-800: var(--purple-hover-dark);
+  --color-purple-900: var(--purple-hover-dark);
+
+  /* Pastel Pink overrides */
+  --color-pink-50: var(--pink-light);
+  --color-pink-100: var(--pink-light);
+  --color-pink-200: var(--pink-light);
+  --color-pink-300: var(--pink-pastel);
+  --color-pink-455: var(--pink-pastel);
+  --color-pink-500: var(--pink-pastel);
+  --color-pink-600: var(--pink-hover);
+  --color-pink-700: var(--pink-hover-dark);
+  --color-pink-850: var(--pink-hover-dark);
+  --color-pink-900: var(--pink-hover-dark);
+
+  /* Pastel Rose overrides */
+  --color-rose-50: var(--pink-light);
+  --color-rose-100: var(--pink-light);
+  --color-rose-200: var(--pink-light);
+  --color-rose-300: var(--pink-pastel);
+  --color-rose-400: var(--pink-pastel);
+  --color-rose-500: var(--pink-pastel);
+  --color-rose-600: var(--pink-hover);
+  --color-rose-700: var(--pink-hover-dark);
+  --color-rose-850: var(--pink-hover-dark);
+  --color-rose-900: var(--pink-hover-dark);
+
+  /* Pastel Blue overrides */
+  --color-blue-50: var(--blue-light);
+  --color-blue-100: var(--blue-light);
+  --color-blue-200: var(--blue-light);
+  --color-blue-300: var(--blue-pastel);
+  --color-blue-400: var(--blue-pastel);
+  --color-blue-500: var(--blue-pastel);
+  --color-blue-600: var(--blue-hover);
+  --color-blue-700: var(--blue-hover-dark);
+  --color-blue-800: var(--blue-hover-dark);
+  --color-blue-900: var(--blue-hover-dark);
+
+  /* Success Pastel Green */
+  --color-emerald-550: var(--success);
+  --color-emerald-500: var(--success);
+  --color-emerald-450: var(--success);
+  --color-emerald-400: var(--success);
+  --color-emerald-300: var(--success-light);
+
+  /* Error Pastel Red */
+  --color-red-500: var(--error);
+  --color-red-400: var(--error);
+  --color-red-300: var(--error-light);
+
+  /* Warning Pastel Amber */
+  --color-amber-500: var(--warning);
+  --color-amber-400: var(--warning);
+  --color-amber-300: var(--warning-light);
+}
+
+:root {
+  /* --- Light Theme: White & Pastel Colors --- */
+  --bg-page: #ffffff; /* White background */
+  --bg-card: #f8fafc; /* Very light slate card */
+  --border-primary: #e2e8f0;
+  --border-secondary: #cbd5e1;
+  --bg-card-hover: #f1f5f9;
+  
+  --text-muted: #64748b;
+  --text-secondary: #475569;
+  --text-primary: #0f172a;
+
+  /* Pastel Indigo/Violet */
+  --indigo-light: #e0e7ff;
+  --indigo-pastel: #818cf8;
+  --indigo-hover: #6366f1;
+  --indigo-hover-dark: #4f46e5;
+
+  /* Pastel Purple */
+  --purple-light: #f5f3ff;
+  --purple-pastel: #c084fc;
+  --purple-hover: #a855f7;
+  --purple-hover-dark: #7c3aed;
+
+  /* Pastel Pink */
+  --pink-light: #fff1f2;
+  --pink-pastel: #fecdd3;
+  --pink-hover: #fda4af;
+  --pink-hover-dark: #f43f5e;
+
+  /* Pastel Blue */
+  --blue-light: #f0f9ff;
+  --blue-pastel: #7dd3fc;
+  --blue-hover: #38bdf8;
+  --blue-hover-dark: #0284c7;
+
+  /* Success/Warning/Error */
+  --success: #10b981;
+  --success-light: #a7f3d0;
+  --error: #f43f5e;
+  --error-light: #fecdd3;
+  --warning: #fbbf24;
+  --warning-light: #fde68a;
+}
+
+.dark {
+  /* --- Dark Theme: Black & Pastel Colors --- */
+  --bg-page: #09090b; /* Deep black background */
+  --bg-card: #121214; /* Slate/dark card */
+  --border-primary: #1e1e24;
+  --border-secondary: #27272a;
+  --bg-card-hover: #27272a;
+  
+  --text-muted: #8e8e93;
+  --text-secondary: #a1a1aa;
+  --text-primary: #e4e4e7;
+
+  /* Pastel Indigo/Violet in Dark Theme */
+  --indigo-light: #232244;
+  --indigo-pastel: #a5b4fc;
+  --indigo-hover: #818cf8;
+  --indigo-hover-dark: #6366f1;
+
+  /* Pastel Purple */
+  --purple-light: #2e1b4e;
+  --purple-pastel: #d8b4fe;
+  --purple-hover: #c084fc;
+  --purple-hover-dark: #a855f7;
+
+  /* Pastel Pink */
+  --pink-light: #4c0519;
+  --pink-pastel: #fda4af;
+  --pink-hover: #f43f5e;
+  --pink-hover-dark: #e11d48;
+
+  /* Pastel Blue */
+  --blue-light: #0c4a6e;
+  --blue-pastel: #7dd3fc;
+  --blue-hover: #38bdf8;
+  --blue-hover-dark: #0284c7;
+
+  /* Success/Warning/Error */
+  --success: #34d399;
+  --success-light: #064e3b;
+  --error: #fb7185;
+  --error-light: #4c0519;
+  --warning: #fbbf24;
+  --warning-light: #78350f;
+}
+
+/* Base Body Styles */
+body {
+  background-color: var(--bg-page);
+  color: var(--text-primary);
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* --- Light Mode Contrast Overrides --- */
+:root h1, :root h2, :root h3, :root h4, :root h5, :root h6 {
+  color: var(--text-primary) !important;
+}
+
+/* Force light page title/label texts to dark grey instead of white */
+:root .text-white:not(button):not(.bg-indigo-500 *):not(.bg-indigo-600 *):not(.bg-indigo-650 *):not(.bg-purple-600 *):not(.bg-blue-600 *):not(.bg-emerald-600 *):not(.bg-red-500 *):not(.bg-rose-500 *) {
+  color: var(--text-primary) !important;
+}
+
+:root .text-slate-100:not(button):not(.bg-indigo-500 *):not(.bg-indigo-600 *):not(.bg-indigo-650 *),
+:root .text-slate-200:not(button):not(.bg-indigo-500 *):not(.bg-indigo-600 *):not(.bg-indigo-650 *),
+:root .text-slate-300:not(button):not(.bg-indigo-500 *):not(.bg-indigo-600 *):not(.bg-indigo-650 *) {
+  color: var(--text-primary) !important;
+}
+
+/* Force white text inside solid colored buttons in light mode */
+:root .bg-indigo-500,
+:root .bg-indigo-600,
+:root .bg-indigo-650,
+:root .bg-purple-500,
+:root .bg-purple-600,
+:root .bg-pink-500,
+:root .bg-blue-500,
+:root .bg-blue-600,
+:root .bg-emerald-500,
+:root .bg-emerald-600,
+:root .bg-red-500,
+:root .bg-rose-500 {
+  color: #ffffff !important;
+}
+
+/* Ensure SVG icons remain white inside colored buttons */
+:root .bg-indigo-500 *,
+:root .bg-indigo-600 *,
+:root .bg-indigo-650 *,
+:root .bg-purple-500 *,
+:root .bg-purple-600 *,
+:root .bg-blue-500 *,
+:root .bg-blue-600 *,
+:root .bg-red-500 *,
+:root .bg-rose-500 * {
+  stroke: #ffffff !important;
+}
+
+/* Custom styled scrollbars for dark/light mode */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-page);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-primary);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--border-secondary);
+}
+
+/* Invert calendar picker icon only in dark background */
+.dark input[type="datetime-local"]::-webkit-calendar-picker-indicator,
+.dark input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(1) opacity(0.7);
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.dark input[type="datetime-local"]::-webkit-calendar-picker-indicator:hover,
+.dark input[type="date"]::-webkit-calendar-picker-indicator:hover {
+  opacity: 1;
+}

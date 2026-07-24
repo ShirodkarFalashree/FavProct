@@ -189,13 +189,13 @@ const Cohorts = () => {
                             <ChevronRight className="mr-1.5 h-4 w-4 text-indigo-400" />
                             {classItem.name}
                           </h4>
-                          <button
+                          {/* <button
                             onClick={() => setActiveClassForm(activeClassForm === classItem._id ? null : classItem._id)}
                             className="flex items-center text-[10px] uppercase font-bold text-slate-400 hover:text-slate-300 transition-colors"
                           >
                             <Plus className="mr-0.5 h-3 w-3" />
                             Add Subject
-                          </button>
+                          </button> */}
                         </div>
 
                         {/* Add Subject Inline Form */}
@@ -218,7 +218,7 @@ const Cohorts = () => {
                         )}
 
                         {/* Subjects badges */}
-                        <div className="flex flex-wrap gap-2">
+                        {/* <div className="flex flex-wrap gap-2">
                           {classItem.subjects.length === 0 ? (
                             <span className="text-[10px] text-slate-500 italic">No subjects added.</span>
                           ) : (
@@ -232,7 +232,7 @@ const Cohorts = () => {
                               </span>
                             ))
                           )}
-                        </div>
+                        </div> */}
                       </div>
                     ))
                   )}

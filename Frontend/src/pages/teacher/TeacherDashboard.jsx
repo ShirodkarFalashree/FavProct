@@ -35,11 +35,18 @@ const TeacherDashboard = () => {
 
   return (
     <div className="space-y-8">
-      <div>
-        <h1 className="text-3xl font-extrabold text-white tracking-tight">Teacher Console</h1>
-        <p className="text-sm text-slate-400 mt-1">
-          Welcome back, {user.name}. Grade submitted student exams and review feedback history.
-        </p>
+      {/* Header */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800 pb-5 mb-2">
+        <div>
+          <h1 className="text-3xl font-extrabold text-white tracking-tight">Teacher Console</h1>
+          <p className="text-sm text-indigo-400 mt-1">Welcome back, <strong className="text-white font-bold">{user.name}</strong></p>
+        </div>
+        <div className="text-left md:text-right">
+          <span className="inline-flex items-center rounded-xl bg-indigo-500/10 border border-indigo-500/20 px-3 py-1.5 text-xs font-semibold text-indigo-300">
+            {user.organizationName || "Institution Staff"}
+          </span>
+          <p className="text-[10px] text-slate-500 mt-1 font-mono">Org ID: {user.organizationId}</p>
+        </div>
       </div>
 
       {/* Row 1: Statistics Cards */}
@@ -66,7 +73,7 @@ const TeacherDashboard = () => {
         <div className="rounded-2xl border border-slate-800 bg-slate-900/50 p-6 relative overflow-hidden">
           <div className="flex items-center justify-between">
             <span className="text-sm font-medium text-slate-400">Grading Completed</span>
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 shadow-md">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-450 shadow-md">
               <CheckCircle2 className="h-5 w-5" />
             </div>
           </div>
@@ -99,7 +106,7 @@ const TeacherDashboard = () => {
         </div>
       </div>
 
-      {/* Row 1.5: Visual Analytics Charts */}
+      {/* Row 1.5: Workload & Grading Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <DoughnutChart
           title="Grading Status Overview"

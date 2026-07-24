@@ -46,9 +46,13 @@ export const signup = async (req, res) => {
       organizationId: org._id,
     });
 
+    const userJson = user.toJSON();
+    delete userJson.password; // safety
+    userJson.organizationName = org ? org.name : "";
+
     res.status(201).json({
       message: "User registered successfully",
-      user
+      user: userJson
     });
 
   } catch (err) {
@@ -94,12 +98,53 @@ export const login = async (req, res) => {
       { expiresIn: "1d" }
     );
 
+    const org = await Organization.findById(user.organizationId);
+    const userJson = user.toJSON();
+    delete userJson.password; // safety
+    userJson.organizationName = org ? org.name : "";
+
     res.json({
       message: "Login successful",
       token,
-      user
+      user: userJson
     });
 
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+export const updateProfile = async (req, res) => {
+  try {
+    const { userId, name, password } = req.body;
+    if (!userId) {
+      return res.status(400).json({ message: "userId is required" });
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    if (name) {
+      user.name = name.trim();
+    }
+
+    if (password) {
+      user.password = password;
+    }
+
+    await user.save();
+
+    const org = await Organization.findById(user.organizationId);
+    const userJson = user.toJSON();
+    delete userJson.password;
+    userJson.organizationName = org ? org.name : "";
+
+    res.json({
+      message: "Profile updated successfully",
+      user: userJson
+    });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

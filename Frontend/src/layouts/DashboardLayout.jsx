@@ -12,7 +12,11 @@ import {
   Menu,
   X,
   User,
-  GraduationCap
+  GraduationCap,
+  Award,
+  Activity,
+  Sun,
+  Moon
 } from "lucide-react";
 
 const DashboardLayout = () => {
@@ -20,6 +24,23 @@ const DashboardLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+
+  const [theme, setTheme] = useState(() => {
+    const saved = localStorage.getItem("theme");
+    if (saved) return saved;
+    return document.documentElement.classList.contains("dark") ? "dark" : "light";
+  });
+
+  const toggleTheme = () => {
+    const nextTheme = theme === "dark" ? "light" : "dark";
+    setTheme(nextTheme);
+    localStorage.setItem("theme", nextTheme);
+    if (nextTheme === "dark") {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+  };
 
   if (loading) {
     return (
@@ -43,20 +64,33 @@ const DashboardLayout = () => {
     { label: "Cohorts & Classes", path: "/admin/cohorts", icon: BookOpen },
     { label: "Teachers", path: "/admin/teachers", icon: Users },
     { label: "Question Banks", path: "/admin/questions", icon: FileSpreadsheet },
-    { label: "Create Exam", path: "/admin/exams/create", icon: FileText }
+    { label: "Create Exam", path: "/admin/exams/create", icon: FileText },
+    { label: "Profile Settings", path: "/profile", icon: User }
   ];
 
   const getTeacherLinks = () => [
     { label: "Dashboard", path: "/teacher", icon: LayoutDashboard },
-    { label: "Pending Evaluations", path: "/teacher/evaluations", icon: ClipboardList }
+    { label: "Pending Evaluations", path: "/teacher/evaluations", icon: ClipboardList },
+    { label: "Result Analysis", path: "/teacher/analysis", icon: Activity },
+    { label: "Profile Settings", path: "/profile", icon: User }
   ];
 
   const getStudentLinks = () => [
-    { label: "Dashboard", path: "/student", icon: GraduationCap }
+    { label: "Dashboard", path: "/student", icon: LayoutDashboard },
+    { label: "Scheduled Exams", path: "/student/scheduled", icon: ClipboardList },
+    { label: "Graded Reports", path: "/student/graded", icon: Award },
+    { label: "Profile Settings", path: "/profile", icon: User }
+  ];
+
+  const getSuperAdminLinks = () => [
+    { label: "Dashboard", path: "/superadmin", icon: LayoutDashboard },
+    { label: "Profile Settings", path: "/profile", icon: User }
   ];
 
   const links =
-    user.role === "admin"
+    user.role === "superadmin"
+      ? getSuperAdminLinks()
+      : user.role === "admin"
       ? getAdminLinks()
       : user.role === "teacher"
       ? getTeacherLinks()
@@ -68,11 +102,11 @@ const DashboardLayout = () => {
       <aside className="hidden w-64 border-r border-slate-800 bg-slate-900/40 backdrop-blur-md md:flex md:flex-col">
         <div className="flex h-16 items-center justify-between px-6 border-b border-slate-800">
           <div className="flex items-center space-x-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-tr from-indigo-500 to-purple-500 text-white font-bold">
-              P
+            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-slate-800 text-slate-100 font-bold border border-slate-700 text-xs">
+              FAV
             </div>
-            <span className="text-lg font-bold tracking-wider bg-gradient-to-r from-white to-slate-400 bg-clip-text text-transparent">
-              PROCT-ASSESS
+            <span className="text-base font-bold tracking-wider text-slate-105 uppercase">
+              FAVPROCT
             </span>
           </div>
         </div>
@@ -89,10 +123,10 @@ const DashboardLayout = () => {
                   className={`group flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 ${
                     isActive
                       ? "bg-indigo-600/90 text-white shadow-lg shadow-indigo-600/25"
-                      : "text-slate-400 hover:bg-slate-800/50 hover:text-slate-100"
+    : "text-slate-400 hover:bg-slate-100 hover:text-black"
                   }`}
                 >
-                  <Icon className={`mr-3 h-5 w-5 ${isActive ? "text-white" : "text-slate-400 group-hover:text-slate-100"}`} />
+                  <Icon className={`mr-3 h-5 w-5 ${isActive ? "text-white" : "text-slate-400 group-hover:text-black"}`} />
                   {link.label}
                 </Link>
               );
@@ -127,10 +161,10 @@ const DashboardLayout = () => {
             </div>
 
             <div className="flex items-center space-x-2 px-2 pb-6 border-b border-slate-800">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-tr from-indigo-500 to-purple-500 text-white font-bold">
-                P
+              <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-slate-800 text-slate-100 font-bold border border-slate-700 text-xs">
+                FAV
               </div>
-              <span className="text-lg font-bold tracking-wider text-white">PROCT-ASSESS</span>
+              <span className="text-base font-bold tracking-wider text-slate-105 uppercase">FAVPROCT</span>
             </div>
 
             <div className="mt-5 flex-1 h-0 overflow-y-auto">
@@ -183,6 +217,19 @@ const DashboardLayout = () => {
           </button>
 
           <div className="ml-auto flex items-center space-x-4">
+            {/* Theme Toggle Button */}
+            <button
+              onClick={toggleTheme}
+              className="rounded-xl p-2 border border-slate-800 bg-slate-900/60 hover:bg-slate-800 hover:border-slate-700 text-slate-400 hover:text-white transition-all cursor-pointer shadow-sm flex items-center justify-center shrink-0"
+              title="Toggle light/dark theme"
+            >
+              {theme === "dark" ? (
+                <Sun className="h-4.5 w-4.5" />
+              ) : (
+                <Moon className="h-4.5 w-4.5" />
+              )}
+            </button>
+
             <div className="flex items-center space-x-3 rounded-full border border-slate-800 bg-slate-900/60 py-1.5 pl-3 pr-4 shadow-sm">
               <div className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-800 text-indigo-400 border border-slate-700">
                 <User className="h-4.5 w-4.5" />

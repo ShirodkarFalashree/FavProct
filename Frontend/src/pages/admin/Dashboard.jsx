@@ -4,6 +4,7 @@ import API from "../../services/api";
 import { toast } from "react-hot-toast";
 import { Users, GraduationCap, ClipboardList, Layers, FileText, CheckCircle, Clock } from "lucide-react";
 import { DoughnutChart, BarChart } from "../../components/DashboardCharts";
+import { CalendarView } from "../../components/CalendarView";
 
 const AdminDashboard = () => {
   const { user } = useAuth();
@@ -16,20 +17,24 @@ const AdminDashboard = () => {
     pendingEvaluations: 0,
     completedEvaluations: 0
   });
+  const [exams, setExams] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchStats = async () => {
+    const fetchStatsAndExams = async () => {
       try {
-        const res = await API.get(`/admin/stats?organizationId=${user.organizationId}`);
-        setStats(res.data);
+        const statsRes = await API.get(`/admin/stats?organizationId=${user.organizationId}`);
+        setStats(statsRes.data);
+        
+        const examsRes = await API.get(`/exam?organizationId=${user.organizationId}`);
+        setExams(examsRes.data);
       } catch (err) {
-        toast.error("Failed to load statistics");
+        toast.error("Failed to load dashboard data");
       } finally {
         setLoading(false);
       }
     };
-    fetchStats();
+    fetchStatsAndExams();
   }, [user.organizationId]);
 
   if (loading) {
@@ -45,42 +50,57 @@ const AdminDashboard = () => {
     { label: "Total Teachers", value: stats.teachersCount, icon: Users, color: "from-indigo-500 to-purple-500" },
     { label: "Cohorts/Grades", value: stats.cohortsCount, icon: Layers, color: "from-purple-500 to-pink-500" },
     { label: "Exams Configured", value: stats.examsCount, icon: FileText, color: "from-pink-500 to-rose-500" },
-    { label: "Total Exam Allotments", value: stats.totalAllotments, icon: ClipboardList, color: "from-amber-500 to-orange-500" },
-    { label: "Pending Evaluations", value: stats.pendingEvaluations, icon: Clock, color: "from-orange-500 to-red-500" },
-    { label: "Evaluations Completed", value: stats.completedEvaluations, icon: CheckCircle, color: "from-emerald-500 to-teal-500" }
+    { label: "Total Allotments", value: stats.totalAllotments, icon: ClipboardList, color: "from-amber-500 to-orange-500" },
+    { label: "Pending Reviews", value: stats.pendingEvaluations, icon: Clock, color: "from-orange-500 to-red-500" },
+    { label: "Completed Reviews", value: stats.completedEvaluations, icon: CheckCircle, color: "from-emerald-500 to-teal-500" }
   ];
 
   return (
     <div className="space-y-8">
-      <div>
-        <h1 className="text-3xl font-extrabold text-white tracking-tight">Admin Control Panel</h1>
-        <p className="text-sm text-slate-400 mt-1">
-          Review overall registration levels and evaluation activities across your institution.
-        </p>
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800 pb-5 mb-2">
+        <div>
+          <h1 className="text-3xl font-extrabold text-white tracking-tight">Admin Control Panel</h1>
+          <p className="text-sm text-indigo-400 mt-1">Welcome back, <strong className="text-white font-bold">{user.name}</strong></p>
+        </div>
+        <div className="text-left md:text-right">
+          <span className="inline-flex items-center rounded-xl bg-indigo-500/10 border border-indigo-500/20 px-3 py-1.5 text-xs font-semibold text-indigo-300">
+            {user.organizationName || "Institution Admin"}
+          </span>
+          <p className="text-[10px] text-slate-500 mt-1 font-mono">Org ID: {user.organizationId}</p>
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-        {statCards.map((card, index) => {
-          const Icon = card.icon;
-          return (
-            <div
-              key={index}
-              className="relative overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/50 p-6 transition-all duration-300 hover:-translate-y-1 hover:border-slate-700"
-            >
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-medium text-slate-400">{card.label}</span>
-                <div className={`flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-tr ${card.color} text-white shadow-md`}>
-                  <Icon className="h-5 w-5" />
+      {/* Grid containing Calendar (top-left) and Statistics Cards (top-right) */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Top Left: Calendar View */}
+        <div className="lg:col-span-1">
+          <CalendarView exams={exams} title="Scheduled Exams" />
+        </div>
+
+        {/* Top Right: Stat Cards Grid */}
+        <div className="lg:col-span-2 grid grid-cols-2 sm:grid-cols-3 gap-4">
+          {statCards.map((card, index) => {
+            const Icon = card.icon;
+            return (
+              <div
+                key={index}
+                className="relative overflow-hidden rounded-xl border border-slate-800 bg-slate-900/50 p-4 transition-all duration-300 hover:-translate-y-0.5 hover:border-slate-700"
+              >
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] font-medium text-slate-400 truncate pr-2">{card.label}</span>
+                  <div className={`flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-tr ${card.color} text-white shadow-md shrink-0`}>
+                    <Icon className="h-4 w-4" />
+                  </div>
                 </div>
+                <div className="mt-3">
+                  <span className="text-xl font-bold text-white tracking-tight">{card.value}</span>
+                </div>
+                {/* Subtle background glow */}
+                <div className={`absolute bottom-0 right-0 h-10 w-10 bg-gradient-to-tr ${card.color} opacity-5 blur-md rounded-full`}></div>
               </div>
-              <div className="mt-4">
-                <span className="text-3xl font-bold text-white tracking-tight">{card.value}</span>
-              </div>
-              {/* Subtle background glow */}
-              <div className={`absolute bottom-0 right-0 h-16 w-16 bg-gradient-to-tr ${card.color} opacity-5 blur-xl rounded-full`}></div>
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
       </div>
 
       {/* Visual Analytics Charts */}
